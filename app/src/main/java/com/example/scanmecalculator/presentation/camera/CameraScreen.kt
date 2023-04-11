@@ -1,12 +1,19 @@
 package com.example.scanmecalculator.presentation.camera
 
+import android.widget.Space
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCase
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
@@ -32,8 +39,12 @@ import com.example.scanmecalculator.R
 import com.example.scanmecalculator.presentation.camera.CameraViewModel.Companion.emptyImageUri
 import com.example.scanmecalculator.presentation.camera.components.CapturePictureButton
 import com.example.scanmecalculator.presentation.ui.theme.LocalSpacing
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.IOException
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -43,34 +54,46 @@ fun CameraScreen(
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
 ) {
     val context = LocalContext.current
+    val spacing = LocalSpacing.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
     val imageUri by viewModel.imageUri.collectAsState()
-    val spacing = LocalSpacing.current
+    val previewUseCase by viewModel.previewUseCase.collectAsState()
+    val imageCaptureUseCase by viewModel.imageCaptureUseCase.collectAsState()
+    val text by viewModel.text.collectAsState()
 
-    var previewUseCase by remember {
-        mutableStateOf<UseCase>(
-            Preview.Builder().build()
-        )
-    }
-    val imageCaptureUseCase by remember {
-        mutableStateOf(
-            ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
-                .build()
-        )
+    LaunchedEffect(key1 = imageUri) {
+        if (imageUri != emptyImageUri) {
+            var image: InputImage? = null
+            try {
+                image = InputImage.fromFilePath(context, imageUri)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            viewModel.readText(image)
+        }
     }
 
     Box(modifier = modifier) {
         if (imageUri != emptyImageUri) {
-            Box(modifier = Modifier.padding(spacing.spaceMedium)) {
+            Column(
+                modifier = Modifier.padding(spacing.spaceMedium),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Image(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     painter = rememberImagePainter(imageUri),
                     contentDescription = stringResource(id = R.string.captured_image)
                 )
+
+                Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                Text(text = "text = $text")
+                Spacer(modifier = Modifier.height(spacing.spaceMedium))
                 Button(
-                    modifier = Modifier.align(Alignment.BottomCenter),
+                    modifier = Modifier,
                     onClick = {
                         viewModel.onRetakePicture()
                     }
@@ -82,7 +105,7 @@ fun CameraScreen(
             CameraPreview(
                 modifier = Modifier.fillMaxSize(),
                 onUseCase = {
-                    previewUseCase = it
+                    viewModel.onUseCase(it)
                 }
             )
 
