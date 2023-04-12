@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.scanmecalculator.navigation.Route
 import com.example.scanmecalculator.presentation.camera.CameraScreen
 import com.example.scanmecalculator.presentation.home.HomeScreen
+import com.example.scanmecalculator.presentation.image_picker.ImagePickerResultScreen
 import com.example.scanmecalculator.presentation.ui.theme.ScanMeCalculatorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,7 +46,10 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate(Route.CAMERA)
                                 },
                                 onImageSelected = { fileUri ->
-
+                                    navController.navigate(
+                                        Route.IMAGE_PICKER_RESULT
+                                                + "/${Uri.encode(fileUri.toString())}"
+                                    )
                                 },
                                 modifier = Modifier.fillMaxSize()
                             )
@@ -53,10 +59,30 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
+                        composable(route = Route.IMAGE_PICKER_RESULT + "/{fileUri}",
+                            arguments = listOf(
+                                navArgument("fileUri") {
+                                    type = NavType.StringType
+                                }
+                            )
+                        ) {
+                            val fileUriString =
+                                it.arguments?.getString("fileUri") ?: emptyImageUri.toString()
+                            val fileUri = Uri.parse(fileUriString)
+
+                            ImagePickerResultScreen(
+                                imageUri = fileUri,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+
+    companion object {
+        val emptyImageUri: Uri = Uri.parse("file://dev/null")
     }
 }
 

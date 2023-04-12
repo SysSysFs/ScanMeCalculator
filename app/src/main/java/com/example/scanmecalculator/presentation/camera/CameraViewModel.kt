@@ -6,6 +6,7 @@ import androidx.camera.core.Preview
 import androidx.camera.core.UseCase
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
+import com.example.scanmecalculator.MainActivity.Companion.emptyImageUri
 import com.example.scanmecalculator.domain.model.TextParserInfo
 import com.example.scanmecalculator.domain.use_case.ReadTextUseCase
 import com.example.scanmecalculator.domain.use_case.TakePictureUseCase
@@ -68,9 +69,4 @@ class CameraViewModel @Inject constructor(
         }
 
     }
-
-    companion object {
-        val emptyImageUri: Uri = Uri.parse("file://dev/null")
-    }
-
 }
