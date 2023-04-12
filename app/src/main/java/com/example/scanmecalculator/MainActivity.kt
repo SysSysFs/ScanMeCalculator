@@ -42,6 +42,9 @@ class MainActivity : ComponentActivity() {
                                 onLaunchCamera = {
                                     navController.navigate(Route.CAMERA)
                                 },
+                                onImageSelected = { fileUri ->
+
+                                },
                                 modifier = Modifier.fillMaxSize()
                             )
                         }

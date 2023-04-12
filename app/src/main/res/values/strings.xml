@@ -10,4 +10,13 @@
     <string name="record_audio_access_required">Record audio access is required to record audio.</string>
     <string name="captured_image">Captured image</string>
     <string name="retake_picture">Retake picture</string>
+    <string name="image_picker">Image picker</string>
+    <string name="raw_text">Raw text= %s</string>
+    <string name="input_text">Input text= %s</string>
+    <string name="result">Result= %,.2f</string>
+
+   <!-- 3/4
+
+    5634
+    3+4-->
 </resources>

@@ -4,9 +4,16 @@ import android.Manifest
 import android.app.Activity
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +35,7 @@ import com.example.scanmecalculator.presentation.ui.theme.LocalSpacing
 @Composable
 fun HomeScreen(
     onLaunchCamera: () -> Unit,
+    onImageSelected: (Uri?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -39,6 +47,13 @@ fun HomeScreen(
     val activity = context as Activity
     val dialogQueue = viewModel.visiblePermissionDialogQueue.collectAsState()
     val spacing = LocalSpacing.current
+
+    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            onImageSelected(uri)
+        }
+    )
 
     val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
@@ -62,16 +77,34 @@ fun HomeScreen(
         }
     )
 
-    Box(modifier = modifier.padding(spacing.spaceMedium))
+    Column(modifier = modifier.padding(spacing.spaceMedium))
     {
-        Button(
-            modifier = Modifier.align(
-                Alignment.BottomCenter
-            ),
-            onClick = {
-                multiplePermissionResultLauncher.launch(permissionsToRequest)
-            }) {
-            Text(text = stringResource(id = R.string.launch_camera))
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Button(
+                modifier = Modifier,
+                onClick = {
+                    multiplePermissionResultLauncher.launch(permissionsToRequest)
+
+                }) {
+                Text(text = stringResource(id = R.string.launch_camera))
+            }
+
+            Spacer(modifier = Modifier.width(spacing.spaceMedium))
+            
+            Button(
+                modifier = Modifier,
+                onClick = {
+                    singlePhotoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+
+                }) {
+                Text(text = stringResource(id = R.string.image_picker))
+            }
         }
     }
 

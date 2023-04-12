@@ -6,6 +6,7 @@ import androidx.camera.core.Preview
 import androidx.camera.core.UseCase
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
+import com.example.scanmecalculator.domain.model.TextParserInfo
 import com.example.scanmecalculator.domain.use_case.ReadTextUseCase
 import com.example.scanmecalculator.domain.use_case.TakePictureUseCase
 import com.google.mlkit.vision.common.InputImage
@@ -15,6 +16,7 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import timber.log.Timber
 import java.util.concurrent.Executor
 import javax.inject.Inject
 
@@ -27,7 +29,7 @@ class CameraViewModel @Inject constructor(
     private val _imageUri = MutableStateFlow(emptyImageUri)
     val imageUri = _imageUri.asStateFlow()
 
-    private val _text = MutableStateFlow("")
+    private val _text: MutableStateFlow<TextParserInfo?> = MutableStateFlow(null)
     val text = _text.asStateFlow()
 
     private val _previewUseCase: MutableStateFlow<UseCase> =
@@ -58,7 +60,13 @@ class CameraViewModel @Inject constructor(
     suspend fun readText(
         image: InputImage?
     ) {
-        _text.value = readTextUseCase.invoke(textRecognizer, image)
+        try {
+            _text.value = readTextUseCase.invoke(textRecognizer, image)
+        } catch (ex: Exception) {
+            _text.value = null
+            Timber.e("Failed to parse image to text", ex)
+        }
+
     }
 
     companion object {

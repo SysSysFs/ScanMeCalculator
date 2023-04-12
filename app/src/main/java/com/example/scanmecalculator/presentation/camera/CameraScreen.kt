@@ -31,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
@@ -90,7 +92,25 @@ fun CameraScreen(
                 )
 
                 Spacer(modifier = Modifier.height(spacing.spaceMedium))
-                Text(text = "text = $text")
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(id = R.string.raw_text, text?.unfilteredText ?: ""),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Start
+                )
+                Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(id = R.string.input_text, text?.inputText ?: ""),
+                    textAlign = TextAlign.Start
+                )
+                Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(id = R.string.result, text?.result ?: 0.0),
+                    textAlign = TextAlign.Start
+                )
                 Spacer(modifier = Modifier.height(spacing.spaceMedium))
                 Button(
                     modifier = Modifier,
