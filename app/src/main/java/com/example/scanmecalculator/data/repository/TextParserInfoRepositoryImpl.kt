@@ -40,7 +40,8 @@ class TextParserInfoRepositoryImpl(
             }
             StorageType.FILE -> {
                 flow {
-                    emit(fileStorage.readTextParserInfoList())
+                    val list = fileStorage.readTextParserInfoList()
+                    emit(list)
                 }
             }
         }
