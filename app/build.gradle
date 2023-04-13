@@ -22,12 +22,62 @@ android {
         }
     }
 
+    flavorDimensions "themeMode" , "imageSource"
+    productFlavors {
+        red {
+            dimension "themeMode"
+            applicationIdSuffix ".red"
+        }
+        green {
+            dimension "themeMode"
+            applicationIdSuffix ".green"
+        }
+        filesystem {
+            dimension "imageSource"
+            applicationIdSuffix ".filesystem"
+        }
+        camera {
+            dimension "imageSource"
+            applicationIdSuffix ".camera"
+        }
+    }
+
     buildTypes {
         release {
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            debuggable true
+            minifyEnabled false
+        }
     }
+    applicationVariants.all{
+        variant ->
+            variant.outputs.each{
+                output->
+
+                    def newName = output.outputFile.name
+                    if (variant.buildType.name == "debug"){
+                        newName = newName.replace("-debug", "")
+                    }
+                    else if (variant.buildType.name == "release"){
+                        newName = newName.replace("-release", "")
+                        newName = newName.replace("-unsigned", "")
+                        newName = newName.replace("-signed", "")
+                    }
+
+                    if(newName.contains("camera"))
+                    {
+                        newName = newName.replace("-camera", "-built-in-camera")
+                    }
+
+                    output.outputFileName = newName
+
+            }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.scanmecalculator.BuildConfig
 import com.example.scanmecalculator.R
 import com.example.scanmecalculator.openAppSettings
 import com.example.scanmecalculator.presentation.ui.theme.LocalSpacing
@@ -84,26 +85,26 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Bottom
         ) {
-            Button(
-                modifier = Modifier,
-                onClick = {
-                    multiplePermissionResultLauncher.launch(permissionsToRequest)
+            if (BuildConfig.FLAVOR_imageSource == "camera") {
+                Button(
+                    modifier = Modifier,
+                    onClick = {
+                        multiplePermissionResultLauncher.launch(permissionsToRequest)
 
-                }) {
-                Text(text = stringResource(id = R.string.launch_camera))
-            }
+                    }) {
+                    Text(text = stringResource(id = R.string.launch_camera))
+                }
+            } else if (BuildConfig.FLAVOR_imageSource == "filesystem") {
+                Button(
+                    modifier = Modifier,
+                    onClick = {
+                        singlePhotoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
 
-            Spacer(modifier = Modifier.width(spacing.spaceMedium))
-            
-            Button(
-                modifier = Modifier,
-                onClick = {
-                    singlePhotoPickerLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-
-                }) {
-                Text(text = stringResource(id = R.string.image_picker))
+                    }) {
+                    Text(text = stringResource(id = R.string.image_picker))
+                }
             }
         }
     }
