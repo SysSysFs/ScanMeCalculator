@@ -1,5 +1,6 @@
 package com.example.scanmecalculator.mapper
 
+import com.example.scanmecalculator.data.database.entity.TextParserInfoEntity
 import com.example.scanmecalculator.domain.model.TextParserInfo
 
 fun String.toTextParserInfo(): TextParserInfo {
@@ -28,4 +29,26 @@ fun String.toTextParserInfo(): TextParserInfo {
 
 fun String.parseDouble(): Double {
     return if (isBlank()) 0.0 else toDouble()
+}
+
+fun TextParserInfo.toTextParserInfoEntity(): TextParserInfoEntity {
+    return TextParserInfoEntity(
+        unfilteredText = unfilteredText,
+        inputText = inputText,
+        firstNumber = firstNumber,
+        secondNumber = secondNumber,
+        operator = operator,
+        id = id
+    )
+}
+
+fun TextParserInfoEntity.toTextParserInfo(): TextParserInfo {
+    return TextParserInfo(
+        unfilteredText = unfilteredText,
+        inputText = inputText,
+        firstNumber = firstNumber,
+        secondNumber = secondNumber,
+        operator = operator,
+        id = id
+    )
 }

@@ -1,6 +1,5 @@
 package com.example.scanmecalculator.presentation.camera
 
-import android.net.Uri
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCase
@@ -8,12 +7,13 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.example.scanmecalculator.MainActivity.Companion.emptyImageUri
 import com.example.scanmecalculator.domain.model.TextParserInfo
+import com.example.scanmecalculator.domain.repository.StorageType
+import com.example.scanmecalculator.domain.repository.TextParserInfoRepository
 import com.example.scanmecalculator.domain.use_case.ReadTextUseCase
+import com.example.scanmecalculator.domain.use_case.SaveDataUseCase
 import com.example.scanmecalculator.domain.use_case.TakePictureUseCase
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +25,7 @@ import javax.inject.Inject
 class CameraViewModel @Inject constructor(
     private val takePictureUseCase: TakePictureUseCase,
     private val readTextUseCase: ReadTextUseCase,
+    private val saveDataUseCase: SaveDataUseCase,
     private val textRecognizer: TextRecognizer
 ) : ViewModel() {
     private val _imageUri = MutableStateFlow(emptyImageUri)
@@ -63,6 +64,12 @@ class CameraViewModel @Inject constructor(
     ) {
         try {
             _text.value = readTextUseCase.invoke(textRecognizer, image)
+            _text.value?.let {
+                saveDataUseCase.invoke(
+                    textParserInfo = it,
+                    type = StorageType.DATABASE
+                )
+            }
         } catch (ex: Exception) {
             _text.value = null
             Timber.e("Failed to parse image to text", ex)

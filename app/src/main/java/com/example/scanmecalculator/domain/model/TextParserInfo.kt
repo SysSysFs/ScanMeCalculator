@@ -1,11 +1,15 @@
 package com.example.scanmecalculator.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class TextParserInfo(
-    val unfilteredText: String,
+    val unfilteredText: String="",
     val inputText: String = "",
     val firstNumber: Double = 0.0,
     val secondNumber: Double = 0.0,
-    val operator: Char? = null
+    val operator: Char? = null,
+    val id: Int? = null
 ) {
     val result
         get() = when (operator) {
