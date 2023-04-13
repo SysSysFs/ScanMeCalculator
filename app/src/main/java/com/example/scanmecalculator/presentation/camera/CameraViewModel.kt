@@ -60,14 +60,15 @@ class CameraViewModel @Inject constructor(
     }
 
     suspend fun readText(
-        image: InputImage?
+        image: InputImage?,
+        storageType: StorageType
     ) {
         try {
             _text.value = readTextUseCase.invoke(textRecognizer, image)
             _text.value?.let {
                 saveDataUseCase.invoke(
                     textParserInfo = it,
-                    type = StorageType.DATABASE
+                    type = storageType
                 )
             }
         } catch (ex: Exception) {

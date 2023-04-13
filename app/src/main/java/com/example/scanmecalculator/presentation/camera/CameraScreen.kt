@@ -31,6 +31,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.example.scanmecalculator.MainActivity.Companion.emptyImageUri
 import com.example.scanmecalculator.R
+import com.example.scanmecalculator.domain.repository.StorageType
 import com.example.scanmecalculator.presentation.camera.components.CapturePictureButton
 import com.example.scanmecalculator.presentation.ui.theme.LocalSpacing
 import com.google.mlkit.vision.common.InputImage
@@ -41,6 +42,7 @@ import java.io.IOException
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun CameraScreen(
+    storageType: StorageType,
     viewModel: CameraViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
@@ -62,7 +64,10 @@ fun CameraScreen(
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-            viewModel.readText(image)
+            viewModel.readText(
+                image,
+                storageType
+            )
         }
     }
 

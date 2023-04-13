@@ -25,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberImagePainter
 import com.example.scanmecalculator.MainActivity
 import com.example.scanmecalculator.R
+import com.example.scanmecalculator.domain.repository.StorageType
 import com.example.scanmecalculator.presentation.camera.CameraViewModel
 import com.example.scanmecalculator.presentation.ui.theme.LocalSpacing
 import com.google.mlkit.vision.common.InputImage
@@ -32,6 +33,7 @@ import java.io.IOException
 
 @Composable
 fun ImagePickerResultScreen(
+    storageType: StorageType,
     imageUri: Uri,
     viewModel: ImagePickerResultViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
@@ -40,7 +42,7 @@ fun ImagePickerResultScreen(
     val context = LocalContext.current
     val text by viewModel.text.collectAsState()
 
-    LaunchedEffect(key1 = imageUri )
+    LaunchedEffect(key1 = imageUri)
     {
         if (imageUri != MainActivity.emptyImageUri) {
             var image: InputImage? = null
@@ -49,7 +51,7 @@ fun ImagePickerResultScreen(
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-            viewModel.readText(image)
+            viewModel.readText(storageType, image)
         }
     }
 

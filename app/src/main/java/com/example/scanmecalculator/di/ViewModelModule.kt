@@ -39,7 +39,7 @@ object ViewModelModule {
 
     @ViewModelScoped
     @Provides
-    fun provideGetDataUseCase(): GetDataUseCase {
-        return GetDataUseCase()
+    fun provideGetDataUseCase(textParserInfoRepository: TextParserInfoRepository): GetDataUseCase {
+        return GetDataUseCase(textParserInfoRepository)
     }
 }

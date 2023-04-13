@@ -8,6 +8,7 @@ import com.example.scanmecalculator.domain.repository.TextParserInfoRepository
 import com.example.scanmecalculator.mapper.toTextParserInfo
 import com.example.scanmecalculator.mapper.toTextParserInfoEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
@@ -22,11 +23,12 @@ class TextParserInfoRepositoryImpl(
             }
             StorageType.FILE -> {
                 fileStorage.saveTextParserInfo(textParserInfo)
+                readTextParserInfoList(type)
             }
         }
     }
 
-    override suspend fun readTextParserInfoList(type: StorageType): Flow<List<TextParserInfo>> {
+    override fun readTextParserInfoList(type: StorageType): Flow<List<TextParserInfo>> {
         return when (type) {
             StorageType.DATABASE -> {
                 dao.getTextParserInfoList()
@@ -37,7 +39,9 @@ class TextParserInfoRepositoryImpl(
                     }
             }
             StorageType.FILE -> {
-                flowOf(fileStorage.readTextParserInfoList())
+                flow {
+                    emit(fileStorage.readTextParserInfoList())
+                }
             }
         }
     }

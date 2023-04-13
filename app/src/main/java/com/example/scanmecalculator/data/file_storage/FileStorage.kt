@@ -57,17 +57,22 @@ class FileStorage(
     }
 
     fun readTextParserInfoList(): List<TextParserInfo> {
-        var text = ""
-        encryptedFile.openFileInput().use { fileInputStream ->
-            val reader = BufferedReader(InputStreamReader(fileInputStream))
-            reader.forEachLine { line ->
-                text += "$line \n"
+        if(savedFile.exists()) {
+            var text = ""
+            encryptedFile.openFileInput().use { fileInputStream ->
+                val reader = BufferedReader(InputStreamReader(fileInputStream))
+                reader.forEachLine { line ->
+                    text += "$line \n"
+                }
             }
+            return Json.decodeFromString(
+                deserializer = ListSerializer(TextParserInfo.serializer()),
+                string = text
+            )
         }
-        return Json.decodeFromString(
-            deserializer = ListSerializer(TextParserInfo.serializer()),
-            string = text
-        )
+        else{
+            return emptyList()
+        }
     }
 
     companion object {

@@ -5,10 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface TextParserInfoRepository {
     suspend fun saveTextParserInfo(type: StorageType, textParserInfo: TextParserInfo)
-    suspend fun readTextParserInfoList(type: StorageType): Flow<List<TextParserInfo>>
+    fun readTextParserInfoList(type: StorageType): Flow<List<TextParserInfo>>
 }
 
-enum class StorageType {
-    DATABASE,
-    FILE
+enum class StorageType(val label: String) {
+    FILE("file storage"),
+    DATABASE("database")
 }
